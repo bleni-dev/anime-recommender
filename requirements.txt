@@ -1,0 +1,4 @@
+numpy==2.5.3
+numpy-typing-compat==20260602.2.5
+pandas==3.0.6
+streamlit==1.66.1
