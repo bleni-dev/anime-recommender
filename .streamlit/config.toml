@@ -1,20 +1,7 @@
 [theme]
 base = "dark"
-primaryColor = "#e94560"
-backgroundColor = "#1a1a2e"
-secondaryBackgroundColor = "#16213e"
-textColor = "#eaeaea"
+primaryColor = "#65aef5"
+backgroundColor = "#11151c"
+secondaryBackgroundColor = "#191e27"
+textColor = "#e8edf5"
 font = "sans serif"
-cols = st.columns(5)
-for i, (title, score) in enumerate(recs):
-    with cols[i % 5]:
-        st.markdown(f"**{title}**")
-        st.caption(f"{score:.0%}")
-st.markdown("""
-<style>
-h1 { color: #e94560; }
-.card { background: #16213e; padding: 1rem; border-radius: 12px; }
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown(f'<div class="card">{title}</div>', unsafe_allow_html=True)
