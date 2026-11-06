@@ -4,22 +4,22 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# ---- настройки, которые можно крутить и смотреть, как меняется выдача ----
-MIN_RANK = 50            # теги со relevance ниже этого значения выбрасываем
+#настройки, которые можно крутить и смотреть, как меняется выдача
+MIN_RANK = 50            # теги со relevance ниже этого значения выбрасываю
 W_TAGS, W_DESC = 0.85, 0.15  # вклад тегов/жанров и описания сюжета в итоговое сходство
 
-# ---- 1. загрузка ----
+#1. загрузка
 df = pd.read_csv('data/anilist_anime.csv').reset_index(drop=True)
 tags = pd.read_csv('data/anilist_tags.csv')
 
-# ---- 2. теги: без спойлеров, без слабых, с весом = rank/100 ----
+#2. теги: без спойлеров, без слабых, с весом = rank/100
 tags = tags[(~tags['is_spoiler']) & (tags['rank'] >= MIN_RANK)].copy()
 tags['weight'] = tags['rank'] / 100
 tag_matrix = tags.pivot_table(
     index='id', columns='tag', values='weight', aggfunc='max', fill_value=0
 )
 
-# ---- 3. жанры: вес 1, префикс, чтобы не путать с тегами ----
+#3. жанры: вес 1, префикс, чтобы не путать с тегами
 genre_rows = (
     df[['id', 'genres']].dropna()
     .assign(genre=lambda d: d['genres'].str.split(';'))
@@ -34,10 +34,10 @@ genre_matrix = genre_rows.pivot_table(
 # строки в том же порядке, что и в df (важно: индекс матрицы = индекс df)
 features = pd.concat([tag_matrix, genre_matrix], axis=1).reindex(df['id']).fillna(0)
 
-# TF-IDF поверх весов: редкие признаки важнее частых
+# TF-IDF поверх весов: тут редкие признаки важнее частых
 X_tags = TfidfTransformer().fit_transform(features.values)
 
-# ---- 4. описание сюжета ----
+#4. описание сюжета
 def clean_desc(text):
     text = re.sub(r'\((Source|Written by)[^)]*\)', '', str(text))
     text = re.sub(r'Note:.*', '', text)
@@ -50,7 +50,7 @@ X_desc = TfidfVectorizer(
 
 print('теги+жанры:', X_tags.shape, '| описание:', X_desc.shape)
 
-# ---- 5. итоговое сходство: смесь двух матриц ----
+#5. итоговое сходство: смесь двух матриц
 sim_tags = cosine_similarity(X_tags).astype('float32')
 sim_desc = cosine_similarity(X_desc).astype('float32')
 sim = W_TAGS * sim_tags + W_DESC * sim_desc

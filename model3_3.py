@@ -5,22 +5,22 @@ from scipy import sparse
 # переиспользуем таблицу и матрицы сходства из model3_2 (теги+жанры и описание)
 from model3_2 import df, sim_tags, sim_desc, franchise_key
 
-# ---- настройки (лучшие значения подберём через evaluate_hybrid.py) ----
+#настройки (лучшие значения подберу через evaluate_hybrid.py)
 W_DESC = 0.5   # вес описания внутри content-части (лучшее из прошлого теста: 0.5-0.65)
 LAM = 0.4     # насколько сильно фанатский граф влияет на итог (0 = только content)
 ALPHA = 1.0    # вес связей "через одного посредника" (0 = только прямые рекомендации)
 
-# ---- 1. content-сходство ----
+#1. content-сходство
 content = ((1 - W_DESC) * sim_tags + W_DESC * sim_desc).astype('float32')
 
-# ---- 2. фанатские рекомендации -> список связей между аниме ----
+#2. фанатские рекомендации список связей между аним
 id2idx = {aid: k for k, aid in enumerate(df['id'])}
 
 recs = pd.read_csv('data/anilist_recs.csv')
 recs = recs[recs['rating'] > 0].copy()          # отрицательные "не рекомендую" выбрасываем
 recs['a'] = recs['source_id'].map(id2idx)
 recs['b'] = recs['target_id'].map(id2idx)
-recs = recs.dropna(subset=['a', 'b'])           # рекомендованного аниме нет в нашем датасете
+recs = recs.dropna(subset=['a', 'b'])           # рекомендованного аниме нет в моем датасете
 recs[['a', 'b']] = recs[['a', 'b']].astype(int)
 
 # связь A-B и B-A считаем одной: упорядочиваем пару и суммируем рейтинги
@@ -55,7 +55,7 @@ def graph_scores(A, alpha):
     return G
 
 
-# ---- 3. итоговая матрица (на ВСЕХ связях; для проверки evaluate_hybrid строит свою) ----
+#3. итоговая матрица (на ВСЕХ связях; evaluate_hybrid строит свою)
 sim = (content + LAM * graph_scores(build_graph(edges), ALPHA)).astype('float32')
 print('sim:', sim.shape)
 

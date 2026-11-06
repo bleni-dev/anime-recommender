@@ -1,9 +1,9 @@
 """
 Скачивает данные с AniList (GraphQL API) и сохраняет в три CSV:
 
-  data/anilist_anime.csv  - одна строка на аниме (название, описание, жанры, метаданные)
-  data/anilist_tags.csv   - теги в "длинном" формате: id, tag, rank, is_spoiler
-  data/anilist_recs.csv   - фанатские рекомендации: source_id, target_id, rating
+  data/anilist_anime.csv  одна строка на аниме (название, описание, жанры, метаданные)
+  data/anilist_tags.csv   теги в "длинном" формате: id, tag, rank, is_spoiler
+  data/anilist_recs.csv   фанатские рекомендации: source_id, target_id, rating
 
 Сырые ответы сохраняются в data/anilist_raw.jsonl, поэтому если скрипт
 прервётся (лимиты, интернет), при повторном запуске он продолжит с того же места.
@@ -21,7 +21,7 @@ import pandas as pd
 import requests
 
 URL = "https://graphql.anilist.co"
-PER_PAGE = 50          # максимум для AniList; если ругается на сложность запроса, поставь 25
+PER_PAGE = 50          # максимум для AniList; если ругается на сложность запроса, лучше поставить 25
 MAX_ITEMS = 5000       # сколько самых популярных аниме брать
 PAUSE = 2.0            # пауза между запросами, сек (лимит API около 90/мин, иногда ниже)
 
@@ -155,7 +155,7 @@ def build_tables():
 
             for node in (m["recommendations"] or {}).get("nodes", []):
                 target = node.get("mediaRecommendation")
-                if target is None:  # рекомендованное аниме могло быть удалено
+                if target is None:  #рекомендованное аниме могло быть удалено
                     continue
                 rec_rows.append({
                     "source_id": aid,

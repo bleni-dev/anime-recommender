@@ -15,7 +15,7 @@ df = meta  # то же имя, что в старой модели, чтобы a
 _lower = meta['title'].str.lower()
 
 
-def find_index(title):
+def find(title):
     m = meta[_lower == title.lower()]
     if m.empty:
         m = meta[_lower.str.contains(title.lower(), regex=False)]
@@ -24,12 +24,12 @@ def find_index(title):
 
 def get_recommendations(title, n=10):
     """Тот же формат ответа, что и раньше: (найденное название, [(название, оценка), ...])."""
-    i = find_index(title)
+    i = find(title)
     if i is None:
         return None, []
     n = min(n, neighbors.shape[1])
     result = [
-        (meta.loc[j, 'title'], float(s))
+        (meta.loc[j, 'title'])
         for j, s in zip(neighbors[i, :n], scores[i, :n])
         if j >= 0
     ]

@@ -50,10 +50,7 @@ lookup, titles = load_data()
 def esc(value):
     return html.escape(str(value)).replace("$", "&#36;")
 
-def has(value):
-    return pd.notna(value) and (not isinstance(value, str) or bool(value.strip()))
-
-def year_score(info):
+def get_anime_details(info):
     parts = []
     if has(info.get("year")):
         parts.append(str(int(info["year"])))
@@ -73,7 +70,7 @@ def card(rank, title, score, top):
         f'<a class="card" href="{link}" target="_blank">'
         f'<div class="poster">{poster(info)}<span class="rank">{rank}</span></div>'
         f'<div class="info"><div class="name">{esc(title)}</div>'
-        f'<div class="sub">{esc(year_score(info))}</div>'
+        f'<div class="sub">{esc(get_anime_details(info))}</div>'
         f'<div class="bar"><span style="width:{pct:.0f}%"></span></div></div></a>'
     )
 
@@ -106,7 +103,7 @@ if choice:
             f'<div class="now">{poster(info)}<div>'
             f'<div class="sub">Selected anime</div>'
             f'<div class="t">{esc(found)}</div>'
-            f'<div class="sub">{esc(year_score(info))}</div>{chips}</div></div>',
+            f'<div class="sub">{esc(get_anime_details(info))}</div>{chips}</div></div>',
             unsafe_allow_html=True
         )
 
