@@ -50,6 +50,11 @@ lookup, titles = load_data()
 def esc(value):
     return html.escape(str(value)).replace("$", "&#36;")
 
+def has(value):
+    if isinstance(value, str):
+        return value.strip() != ""
+    return pd.notna(value)
+
 def get_anime_details(info):
     parts = []
     if has(info.get("year")):
