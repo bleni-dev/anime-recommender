@@ -29,7 +29,7 @@ def get_recommendations(title, n=10):
         return None, []
     n = min(n, neighbors.shape[1])
     result = [
-        (meta.loc[j, 'title'])
+        (meta.loc[j, 'title'], float(s))
         for j, s in zip(neighbors[i, :n], scores[i, :n])
         if j >= 0
     ]
