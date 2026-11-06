@@ -55,13 +55,17 @@ def has(value):
         return value.strip() != ""
     return pd.notna(value)
 
-def get_anime_details(info):
-    parts = []
-    if has(info.get("year")):
-        parts.append(str(int(info["year"])))
-    if has(info.get("score")):
-        parts.append(f"★ {int(info['score'])}")
-    return " | ".join(parts)
+def get_recommendations(title, n=10):
+    i = find_index(title)
+    if i is None:
+        return None, []
+    n = min(n, neighbors.shape[1])
+    result = [
+        (meta.loc[j, 'title'], float(s))
+        for j, s in zip(neighbors[i, :n], scores[i, :n])
+        if j >= 0
+    ]
+    return meta.loc[i, 'title'], result
 
 def poster(info):
     cover = info.get("cover")
